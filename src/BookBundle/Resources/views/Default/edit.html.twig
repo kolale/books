@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ form_start(form) }}
+
+        {{ form_label(form.title) }}
+        {{ form_widget(form.title) }}
+        <br>
+
+        {{ form_label(form.author) }}
+        {{ form_widget(form.author) }}
+        <br>
+
+        {{ form_label(form.readDate) }}
+        {{ form_widget(form.readDate) }}
+        <br>
+
+        {{ form_label(form.downloadEnabled) }}
+        {{ form_widget(form.downloadEnabled) }}
+        <br>
+
+        {{ form_label(form.coverData) }}
+        {{ form_widget(form.coverData) }}
+        <br>
+
+        {{ form_label(form.coverSrcPath) }}
+        {{ form_widget(form.coverSrcPath) }}
+        <br>
+
+        {#{ dump(form.vars.value) }#}
+
+        {% set coverData = form.vars.value.coverData %}
+        {% if coverData is not null and coverData.pathname is not null %}
+            {{ image_resize(web_storage_directory ~ coverData.filename, 300, 200) }}
+            <br>
+            <a href="{{ path('delete_cover', {'id': entity.id}) }}">Удалить обложку</a>
+            <br>
+        {% endif %}
+        
+        <br>
+
+    {{ form_end(form) }}
+
+{% endblock %}

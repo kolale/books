@@ -7,3 +7,14 @@ services:
     #service_name:
     #    class: AppBundle\Directory\ClassName
     #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
+
+    #twig extensions
+    app.twig.image_resize_extension:
+        class: BookBundle\Twig\ImageResizeExtension
+        tags:
+            - { name: twig.extension }
+
+    book.subscriber:
+        class: AppBundle\EventListener\BookEntitySubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
