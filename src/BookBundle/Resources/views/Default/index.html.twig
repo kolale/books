@@ -1,5 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        table {width:100%; border-collapse:collapse}
+        th {background: #ddd}
+        th,td {border: 1px solid black}
+    </style>
+{% endblock %}
+
 {% block body %}
 
     {% set auth = is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -18,25 +27,50 @@
     <br><br>
 
     {% block books_list %}
+        {% if books is not null %}
+            <table>
+            <tr>
+                <th>id</th>
+                <th>Наиме&shy;но&shy;ва&shy;ние</th>
+                <th>Автор</th>
+                <th>Дата про&shy;чте&shy;ния</th>
+                <th>Сохранён&shy;ный файл об&shy;ложки</th>
+                <th>Реальный файл обложки</th>
+                <th>Сохра&shy;нённый файл книги</th>
+                <th>Реаль&shy;ный файл книги</th>
+                <th>Скачи&shy;вание раз&shy;решено</th>
+                <th>Редак&shy;ти&shy;ровать книгу</th>
+                <th>Уда&shy;лить книгу</th>
+                <th>Ска&shy;чать файл с кни&shy;гой</th>
+            </tr>
+        {% endif %}
         {% for book in books %}
-            {{book.id}}; 
-            {{book.title}}; 
-            {{book.author}}; 
-            {{book.readDate is empty ? "" : book.readDate|date('Y-m-d')}}; 
-            {{book.coverPath}}; 
-            {{book.coverSrcPath}}; 
-            <input type="checkbox" disabled
-                {% if book.downloadEnabled %} checked {% endif %}
-            >
-            
+            <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.readDate is empty ? "" : book.readDate|date('Y-m-d') }}</td>
+            <td>{{ book.coverPath|replace({'/': ' / '}) }}</td>
+            <td>{{ book.coverSrcPath }}</td>
+            <td>{{ book.contentPath|replace({'/': ' / '}) }}</td>
+            <td>{{ book.contentSrcPath }}</td>
+            <td><input type="checkbox" disabled {{ book.downloadEnabled ? 'checked="checked"' : '' }}</td>
+            {% set download_link = book.contentPath ? '<a download href="' ~ path('download', {'id': book.id}) ~ '">Скачать</a>' : '' %}
             {% if auth %}
-                <br><a href="{{path('edit', {'id': book.id})}}">Редактировать книгу</a>
-                &nbsp;&nbsp;<a href="{{path('delete', {'id': book.id})}}">Удалить книгу</a>
+                <td><a href="{{ path('edit', {'id': book.id}) }}">Редактировать</a></td>
+                <td><a href="{{ path('delete', {'id': book.id}) }}">Удалить</a></td>
+                <td>{{ download_link|raw }}</td>
+            {% else %}
+                <td></td>
+                <td></td>
+                <td>{{ book.downloadEnabled ? download_link|raw : '' }}
             {% endif %}
-            <br><br>
         {% else %}
             <p>Нет книг для отображения</p>
         {% endfor %}
+        {% if books is not null %}
+            </table>
+        {% endif %}
     {% endblock %}
 
 {% endblock %}

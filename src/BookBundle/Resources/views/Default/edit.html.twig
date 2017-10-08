@@ -1,44 +1,94 @@
 {% extends 'base.html.twig' %}
 
+  {% block stylesheets %}
+      {{ parent() }}
+      <style>
+          .v_indent {height: 7px}
+          img {border: 1px solid silver}
+          .data_block {width: 50%; border: 1px solid silver; padding: 10px}
+          .error {width: 50%; padding: 10px; margin-bottom: 10px; background-color: red; color: white}
+      </style>
+  {% endblock %}
+
 {% block body %}
+
+    {% if not form.vars.valid %}
+        <div class="error">
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
 
     {{ form_start(form) }}
 
         {{ form_label(form.title) }}
         {{ form_widget(form.title) }}
-        <br>
+        <div class="v_indent"></div>
 
         {{ form_label(form.author) }}
         {{ form_widget(form.author) }}
-        <br>
+        <div class="v_indent"></div>
 
         {{ form_label(form.readDate) }}
         {{ form_widget(form.readDate) }}
-        <br>
+        <div class="v_indent"></div>
 
         {{ form_label(form.downloadEnabled) }}
         {{ form_widget(form.downloadEnabled) }}
-        <br>
+        <div class="v_indent"></div>
 
-        {{ form_label(form.coverData) }}
-        {{ form_widget(form.coverData) }}
-        <br>
+        <div class="data_block">
 
-        {{ form_label(form.coverSrcPath) }}
-        {{ form_widget(form.coverSrcPath) }}
-        <br>
+            {{ form_label(form.coverData) }}
+            {{ form_widget(form.coverData) }}
+            <div class="v_indent"></div>
+
+            {{ form_label(form.coverSrcPath) }}
+            {{ form_widget(form.coverSrcPath) }}
+            <div class="v_indent"></div>
+
+            {{ form_label(form.coverPath) }}
+            {{ form_widget(form.coverPath) }}
+            <div class="v_indent"></div>
+
+            {% if entity.coverPath is not null %}
+                {{ image_resize(web_storage_directory ~ entity.coverPath, 300, 200) }}
+                <div class="v_indent"></div>
+                <a href="{{ path('delete_cover', {'id': entity.id}) }}">Удалить файл с обложкой</a>
+                <div class="v_indent"></div>
+                <div>Размер файла с обложкой: {{ (ext_data.cover_filesize/1024/1024)|round(2, 'ceil') }} Мб</div>
+            {% endif %}
+
+        </div>
+
+        <div class="v_indent"></div>
+
+        <div class="data_block">
+
+            {{ form_label(form.contentData) }}
+            {{ form_widget(form.contentData) }}
+            <div class="v_indent"></div>
+
+            {{ form_label(form.contentSrcPath) }}
+            {{ form_widget(form.contentSrcPath) }}
+            <div class="v_indent"></div>
+            
+            {{ form_label(form.contentPath) }}
+            {{ form_widget(form.contentPath) }}
+            <div class="v_indent"></div>
+
+            {% if entity.contentPath is not null %}
+                <a download href="{{ entity.contentPath ? path('download', {'id': entity.id}) }}">Скачать файл с книгой</a>
+                <div class="v_indent"></div>
+                <a href="{{ path('delete_content', {'id': entity.id}) }}">Удалить файл с книгой</a>
+                <div class="v_indent"></div>
+                <div>Размер файла с книгой: {{ (ext_data.content_filesize/1024/1024)|round(2, 'ceil') }} Мб</div>
+            {% endif %}
+
+        </div>
+
+        <div class="v_indent"></div>
 
         {#{ dump(form.vars.value) }#}
-
-        {% set coverData = form.vars.value.coverData %}
-        {% if coverData is not null and coverData.pathname is not null %}
-            {{ image_resize(web_storage_directory ~ coverData.filename, 300, 200) }}
-            <br>
-            <a href="{{ path('delete_cover', {'id': entity.id}) }}">Удалить обложку</a>
-            <br>
-        {% endif %}
-        
-        <br>
 
     {{ form_end(form) }}
 

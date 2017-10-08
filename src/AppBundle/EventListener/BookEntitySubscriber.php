@@ -6,10 +6,15 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use BookBundle\Entity\Book;
 
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-
 class BookEntitySubscriber implements EventSubscriber
 {
+    private $storage_directory;
+
+    public function __construct($storage_directory)
+    {
+        $this->storage_directory = $storage_directory;
+    }
+
     public function getSubscribedEvents()
     {
         return ['postRemove'];
@@ -25,11 +30,16 @@ class BookEntitySubscriber implements EventSubscriber
         $entity = $args->getObject();
 
         if ($entity instanceof Book) {
+            # удаляем файл с обложкой
             $cover_path = $entity->getCoverPath();
-
             if ($cover_path) {
-                # удаляем файл с обложкой
-                unlink('/home/kas/devel/books/web/storage/' . $cover_path);
+                unlink($this->storage_directory . $cover_path);
+            }
+
+            # удаляем файл с книгой
+            $content_path = $entity->getContentPath();
+            if ($content_path) {
+                unlink($this->storage_directory . $content_path);
             }
         }
     }

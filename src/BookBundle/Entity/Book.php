@@ -48,7 +48,7 @@ class Book
     protected $coverSrcPath;
 
     /**
-     * @Assert\File(maxSize="6M", mimeTypes={"image/png", "image/jpeg", "image/jpg"})
+     * @Assert\File(maxSize="5M", mimeTypes={"image/png", "image/jpeg", "image/jpg"})
      */
     protected $coverData;
 
@@ -63,6 +63,11 @@ class Book
      * @ORM\Column(type="string", length=1000, nullable=true)
      */
     protected $contentSrcPath;
+
+    /**
+     * @Assert\File(maxSize="5M")
+     */
+    protected $contentData;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -247,6 +252,29 @@ class Book
     public function getContentSrcPath()
     {
         return $this->contentSrcPath;
+    }
+
+    /**
+     * Set contentData
+     *
+     * @param File $contentData
+     * @return Book
+     */
+    public function setContentData($contentData)
+    {
+        $this->contentData = $contentData;
+
+        return $this;
+    }
+
+    /**
+     * Get contentData
+     *
+     * @return File
+     */
+    public function getContentData()
+    {
+        return $this->contentData;
     }
 
     /**

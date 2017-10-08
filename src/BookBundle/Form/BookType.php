@@ -15,8 +15,48 @@ class BookType extends AbstractType
             ->add('author', 'text', ['label' => 'Автор: '])
             ->add('readDate', 'date', ['label' => 'Дата прочтения: ', 'required' => false])
             ->add('downloadEnabled', 'checkbox', ['label' => 'Скачивание разрешено: ', 'required' => false])
-            ->add('coverData', 'file', ['label' => 'Обложка: ', 'required' => false])
-            ->add('coverSrcPath', 'text', ['label' => 'Файл обложки: ', 'required' => false])
+            ->add('coverData', 'file', ['label' => 'Обложка: ', 'required' => false, 'error_bubbling' => true])
+            ->add(
+                'coverPath',
+                'text',
+                [
+                    'label' => 'Сохранённый файл обложки: ',
+                    'required' => false,
+                    'attr' => ['size' => '100%'],
+                    'disabled' => true
+                ]
+            )
+            ->add(
+                'coverSrcPath',
+                'text',
+                [
+                    'label' => 'Реальный файл обложки: ',
+                    'required' => false,
+                    'attr' => ['size' => '100%'],
+                    'disabled' => true
+                ]
+            )
+            ->add('contentData', 'file', ['label' => 'Книга: ', 'required' => false, 'error_bubbling' => true])
+            ->add(
+                'contentPath',
+                'text',
+                [
+                    'label' => 'Сохранённый файл книги: ',
+                    'required' => false,
+                    'attr' => ['size' => '100%'],
+                    'disabled' => true
+                ]
+            )
+            ->add(
+                'contentSrcPath',
+                'text',
+                [
+                    'label' => 'Реальный файл книги: ',
+                    'required' => false,
+                    'attr' => ['size' => '100%'],
+                    'disabled' => true
+                ]
+            )
             ->add('Сохранить', 'submit');
     }
 

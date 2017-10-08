@@ -18,3 +18,6 @@ services:
         class: AppBundle\EventListener\BookEntitySubscriber
         tags:
             - { name: doctrine.event_subscriber, connection: default }
+        arguments:
+            storage_directory:
+                '%storage_directory%'
