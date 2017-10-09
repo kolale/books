@@ -8,11 +8,11 @@ use BookBundle\Entity\Book;
 
 class BookEntitySubscriber implements EventSubscriber
 {
-    private $storage_directory;
+    private $storageDirectory;
 
-    public function __construct($storage_directory)
+    public function __construct($storageDirectory)
     {
-        $this->storage_directory = $storage_directory;
+        $this->storageDirectory = $storageDirectory;
     }
 
     public function getSubscribedEvents()
@@ -22,24 +22,25 @@ class BookEntitySubscriber implements EventSubscriber
 
     public function postRemove(LifecycleEventArgs $args)
     {
-        $this->index($args);
+        $this->deleteBookData($args);
     }
 
-    public function index(LifecycleEventArgs $args)
+    # удаление связанных файлов при удалении книги
+    public function deleteBookData(LifecycleEventArgs $args)
     {
         $entity = $args->getObject();
 
         if ($entity instanceof Book) {
             # удаляем файл с обложкой
-            $cover_path = $entity->getCoverPath();
-            if ($cover_path) {
-                unlink($this->storage_directory . $cover_path);
+            $coverPath = $entity->getCoverPath();
+            if ($coverPath) {
+                unlink($this->storageDirectory . $coverPath);
             }
 
             # удаляем файл с книгой
-            $content_path = $entity->getContentPath();
-            if ($content_path) {
-                unlink($this->storage_directory . $content_path);
+            $contentPath = $entity->getContentPath();
+            if ($contentPath) {
+                unlink($this->storageDirectory . $contentPath);
             }
         }
     }

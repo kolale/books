@@ -55,7 +55,7 @@
                 <div class="v_indent"></div>
                 <a href="{{ path('delete_cover', {'id': entity.id}) }}">Удалить файл с обложкой</a>
                 <div class="v_indent"></div>
-                <div>Размер файла с обложкой: {{ (ext_data.cover_filesize/1024/1024)|round(2, 'ceil') }} Мб</div>
+                <div>Размер файла с обложкой: {{ (extData.coverFilesize/1024/1024)|round(2, 'ceil') }} Мб</div>
             {% endif %}
 
         </div>
@@ -71,7 +71,7 @@
             {{ form_label(form.contentSrcPath) }}
             {{ form_widget(form.contentSrcPath) }}
             <div class="v_indent"></div>
-            
+
             {{ form_label(form.contentPath) }}
             {{ form_widget(form.contentPath) }}
             <div class="v_indent"></div>
@@ -81,7 +81,7 @@
                 <div class="v_indent"></div>
                 <a href="{{ path('delete_content', {'id': entity.id}) }}">Удалить файл с книгой</a>
                 <div class="v_indent"></div>
-                <div>Размер файла с книгой: {{ (ext_data.content_filesize/1024/1024)|round(2, 'ceil') }} Мб</div>
+                <div>Размер файла с книгой: {{ (extData.contentFilesize/1024/1024)|round(2, 'ceil') }} Мб</div>
             {% endif %}
 
         </div>

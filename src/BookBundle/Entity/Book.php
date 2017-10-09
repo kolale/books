@@ -8,11 +8,14 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="book")
+ * @ORM\Table(name="book", indexes={@ORM\Index(name="read_date_idx", columns={"read_date"})})
  * @JMS\ExclusionPolicy("all")
  */
 class Book
 {
+    # максимальное кол-во загруженных файлов в одном каталоге
+    const MAX_FILES_CNT_IN_DIR = 5;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -321,5 +324,55 @@ class Book
     public function getDownloadEnabled()
     {
         return $this->downloadEnabled;
+    }
+
+    # записывает переданный файл, устанавливает необходимые свойства сущности
+    public function processFile($file, $storageDirectory, $oldFilename, $fileType)
+    {
+        if ($file) {
+            # удаляем старый файл с данными
+            if ($oldFilename) {
+                unlink($storageDirectory . $oldFilename);
+            }
+
+            $srcFilename = $file->getClientOriginalName();
+            $filename = md5(uniqid()) . '.' . $file->guessExtension();
+
+            # ищем каталог в хранилище с кол-вом файлов в нём < MAX_FILES_CNT_IN_DIR
+            $validDir = null;
+            # перебираем все подкаталоги в хранилище
+            foreach (glob($storageDirectory . '*', GLOB_ONLYDIR) as $dir) {
+                $dirFilesCnt = 0;
+                # считаем файлы в подкаталогах
+                foreach (glob($dir . '/*') as $dirFile) {
+                    $dirFilesCnt++;
+                }
+                if ($dirFilesCnt < self::MAX_FILES_CNT_IN_DIR) {
+                    $validDir = preg_replace('/^' . str_replace('/', '\/', $storageDirectory) . '/', '', $dir);
+                    break;
+                }
+            }
+
+            # $storageDirectory - каталог хранилища с завершающим /
+            # $validDir - подкаталог с файлами
+            # $filename - имя файла
+
+            # если в хранилище нет доступных подкаталогов или все переполнены, создаём новый
+            if (!$validDir) {
+                $validDir = md5(uniqid());
+                mkdir($storageDirectory . $validDir);
+            }
+
+            # в имени файла лежит относительный путь от хранилища (с каталогом)
+            $file->move($storageDirectory . $validDir, $filename);
+
+            if ($fileType == 'cover') {
+                $this->setCoverPath($validDir . '/' . $filename);
+                $this->setCoverSrcPath($srcFilename);
+            } else {
+                $this->setContentPath($validDir . '/' . $filename);
+                $this->setContentSrcPath($srcFilename);
+            }
+        }
     }
 }

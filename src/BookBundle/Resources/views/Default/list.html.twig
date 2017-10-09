@@ -15,18 +15,18 @@
 
     {% if auth %}
         logged as: {{app.user.username}}; 
-        <a href="{{path('fos_user_security_logout')}}">logout</a>
+        <a href="{{ path('fos_user_security_logout') }}">logout</a>
 
         <br><br>
         <a href="{{path('edit', {'id': 0})}}">Добавить книгу</a>
 
     {% else %}
-        <a href="/login">log in</a>
+        <a href="{{ path('fos_user_security_login') }}">log in</a>
     {% endif%}
 
     <br><br>
 
-    {% block books_list %}
+    {% block booksList %}
         {% if books is not null %}
             <table>
             <tr>
@@ -34,13 +34,19 @@
                 <th>Наиме&shy;но&shy;ва&shy;ние</th>
                 <th>Автор</th>
                 <th>Дата про&shy;чте&shy;ния</th>
-                <th>Сохранён&shy;ный файл об&shy;ложки</th>
+                {% if auth %}
+                    <th>Сохранён&shy;ный файл об&shy;ложки</th>
+                {% endif %}
                 <th>Реальный файл обложки</th>
-                <th>Сохра&shy;нённый файл книги</th>
+                {% if auth %}
+                    <th>Сохра&shy;нённый файл книги</th>
+                {% endif %}
                 <th>Реаль&shy;ный файл книги</th>
                 <th>Скачи&shy;вание раз&shy;решено</th>
-                <th>Редак&shy;ти&shy;ровать книгу</th>
-                <th>Уда&shy;лить книгу</th>
+                {% if auth %}
+                    <th>Редак&shy;ти&shy;ровать книгу</th>
+                    <th>Уда&shy;лить книгу</th>
+                {% endif %}
                 <th>Ска&shy;чать файл с кни&shy;гой</th>
             </tr>
         {% endif %}
@@ -50,20 +56,22 @@
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
             <td>{{ book.readDate is empty ? "" : book.readDate|date('Y-m-d') }}</td>
-            <td>{{ book.coverPath|replace({'/': ' / '}) }}</td>
+            {% if auth %}
+                <td>{{ book.coverPath|replace({'/': ' / '}) }}</td>
+            {% endif %}
             <td>{{ book.coverSrcPath }}</td>
-            <td>{{ book.contentPath|replace({'/': ' / '}) }}</td>
+            {% if auth %}
+                <td>{{ book.contentPath|replace({'/': ' / '}) }}</td>
+            {% endif %}
             <td>{{ book.contentSrcPath }}</td>
             <td><input type="checkbox" disabled {{ book.downloadEnabled ? 'checked="checked"' : '' }}</td>
-            {% set download_link = book.contentPath ? '<a download href="' ~ path('download', {'id': book.id}) ~ '">Скачать</a>' : '' %}
+            {% set downloadLink = book.contentPath ? '<a download href="' ~ path('download', {'id': book.id}) ~ '">Скачать</a>' : '' %}
             {% if auth %}
                 <td><a href="{{ path('edit', {'id': book.id}) }}">Редактировать</a></td>
                 <td><a href="{{ path('delete', {'id': book.id}) }}">Удалить</a></td>
-                <td>{{ download_link|raw }}</td>
+                <td>{{ downloadLink|raw }}</td>
             {% else %}
-                <td></td>
-                <td></td>
-                <td>{{ book.downloadEnabled ? download_link|raw : '' }}
+                <td>{{ book.downloadEnabled ? downloadLink|raw : '' }}</td>
             {% endif %}
         {% else %}
             <p>Нет книг для отображения</p>
